@@ -32,12 +32,23 @@ router.post("/links", async (req, res) => {
  const { original } = req.body;
  const { authorization } = req.headers;
 
+ async function linksChecker() {
+  const randomLink = generateRandomLink(5);
+  let cutlink = await Links.findOne({ 'link.cut': randomLink });
+  if (cutlink) {
+    return linksChecker();
+  } else {
+    return randomLink;
+  }
+}
+
  try {
     if (!original) {
         return res.status(400).send({ message: '400, Original link is required' });
     }
 
-  const randomLink = generateRandomLink(5);
+  const randomLink = await linksChecker();
+
   const expires = new Date(new Date().getTime() + (5 * 24 * 60 * 60 * 1000));
 
   const newLink = new Links({ link: { original, cut: randomLink }, expiredAt: expires, userId: authorization });
