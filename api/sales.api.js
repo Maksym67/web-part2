@@ -9,7 +9,11 @@ router.get("/sales", async (req, res) => {
     const dbQuery = {};
    
     if (storeLocation) {
-        dbQuery.storeLocation = storeLocation;
+        if (storeLocation.includes('*')) {
+            dbQuery.storeLocation = {$regex: new RegExp(`^${storeLocation.replace(/\*/g, '.*')}$`)};
+        } else {
+            dbQuery.storeLocation = storeLocation;
+        }
        }
 
     if (customer_age) {
