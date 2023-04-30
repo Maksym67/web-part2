@@ -6,6 +6,7 @@ const events = require('events');
 const path = require('path');
 const setTelegramWebhook = require('./telegram_bot');
 const setupWebSocket = require('./websocket');
+const { users } = require('./websocket');
 
 const app = express();
 setupWebSocket();
@@ -33,6 +34,24 @@ app.get('/login', (req, res) => {
  emitter.once(eventName, (userInfo) => {
   res.status(200).send(userInfo);
  });
+});
+
+app.get('/users', (req, res) => {
+    const { status } = req.query;
+
+    if (status) {
+        if (status === 'online') {
+            const filtered = Object.keys(users).filter(key => users[key] === true);
+            res.status(200).send(filtered);
+        }
+        if (status === 'offline') {
+            const filtered = Object.keys(users).filter(key => users[key] === false);
+            res.status(200).send(filtered);
+        }
+        res.status(400).send({ message: 'Query parameter is incorrect!' });
+    }
+
+    res.status(200).send(users);
 });
 
 /**

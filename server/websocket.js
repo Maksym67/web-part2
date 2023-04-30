@@ -66,3 +66,5 @@ module.exports = () => {
   });
  });
 };
+
+module.exports.users = users;
